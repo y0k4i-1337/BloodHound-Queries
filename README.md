@@ -10,6 +10,11 @@ Currently, these queries are based on:
   - [hausec's custom queries](https://github.com/hausec/Bloodhound-Custom-Queries)
   - [CompassSecurity's custom queries](https://github.com/CompassSecurity/BloodHoundQueries)
 
+
+The queries are grouped by categories, as shown in the example below:
+![image](screenshots/custom-queries.png)
+
+
 ## Get Started
 On Linux, you can simply install the queries using this curl command:
 ```sh
