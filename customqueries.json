@@ -6,7 +6,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (u {owned: True}) WHERE (u:User OR u:AZUser) OPTIONAL MATCH (d)-[r:Contains|AZContains*1..]->(u) WHERE (d:Domain OR d:AZTenant) RETURN d, u, r"
+                    "query": "MATCH (u:User {owned: True}) OPTIONAL MATCH (u)-[r:MemberOf*1..]->(g:Group {highvalue: True}) RETURN u, g, r"
                 }
             ]
         },
@@ -141,7 +141,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = (d:Domain)-[r:Contains*1..]->(o) WHERE o.owned = true RETURN p"
+                    "query": "MATCH (o) WHERE o.owned = true RETURN o"
                 }
             ]
         },
@@ -231,7 +231,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = (d:Domain)-[r:Contains*1..]->(c:Computer) WHERE c.haslaps = false RETURN p"
+                    "query": "MATCH (c:Computer) WHERE c.haslaps = false RETURN c"
                 }
             ]
         },
@@ -241,7 +241,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = (d:Domain)-[r:Contains*1..]->(u:User) WHERE u.userpassword IS NOT NULL RETURN p"
+                    "query": "MATCH (u:User) WHERE u.userpassword IS NOT NULL RETURN u"
                 }
             ]
         },
@@ -251,7 +251,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = (d:Domain)-[r:Contains*1..]->(u:User) WHERE u.description =~ '(?i).*pass.*' RETURN p"
+                    "query": "MATCH (u:User) WHERE u.description =~ '(?i).*pass.*' RETURN u"
                 }
             ]
         },
@@ -261,7 +261,27 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = (d:Domain)-[r:Contains*1..]->(u:User) WHERE u.description =~ '(?i).*login.*' RETURN p"
+                    "query": "MATCH (u:User) WHERE u.description =~ '(?i).*login.*' RETURN u"
+                }
+            ]
+        },
+        {
+            "category": "Interesting Information",
+            "name": "All Users with 'BACKUP' in AD Description",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (u:User) WHERE u.description =~ '(?i).*backup.*' RETURN u"
+                }
+            ]
+        },
+        {
+            "category": "Interesting Information",
+            "name": "All Users with '<password-like string>' in AD Description",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (u:User) WHERE u.description =~ '(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[^\\w\\s]).{6,}' RETURN u"
                 }
             ]
         },
@@ -271,7 +291,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = (d:Domain)-[r:Contains*1..]->(u:User) WHERE u.description =~ '(?i).*senha.*' RETURN p"
+                    "query": "MATCH (u:User) WHERE u.description =~ '(?i).*senha.*' RETURN u"
                 }
             ]
         },
@@ -281,7 +301,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = (d:Domain)-[r:Contains*1..]->(u:User) WHERE u.passwordnotreqd = true RETURN p"
+                    "query": "MATCH (u:User) WHERE u.passwordnotreqd = true RETURN u"
                 }
             ]
         },
@@ -569,11 +589,21 @@
         },
         {
             "category": "Local Admin",
-            "name": "Find all users that have local admin rights",
+            "name": "Find all users that have direct local admin rights",
             "queryList": [
                 {
                     "final": true,
                     "query": "MATCH p=(m:User)-[r:AdminTo]->(n:Computer) RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "Local Admin",
+            "name": "Find all owned users that have local admin rights",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=shortestPath((m:User {owned: True})-[r:HasSession|AdminTo|MemberOf*1..]->(n:Computer)) RETURN p"
                 }
             ]
         },
