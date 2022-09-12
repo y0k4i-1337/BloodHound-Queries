@@ -281,7 +281,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (u:User) WHERE u.description =~ '(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[^\\w\\s]).{6,}' RETURN u"
+                    "query": "MATCH (u:User) WHERE u.description =~ '(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[^\\\\w\\\\s]).{6,}' RETURN u"
                 }
             ]
         },
@@ -452,7 +452,7 @@
                 },
                 {
                     "final": true,
-                    "query": "MATCH p = allShortestPaths((o)-[r:{}*1..]->(d:Domain)) WHERE o.owned = true AND d.name = $result RETURN p",
+                    "query": "MATCH p = allShortestPaths((o)-[r:{}*1..]->(d:Domain)) WHERE o <> d AND o.owned = true AND d.name = $result RETURN p",
                     "endNode": "{}"
                 }
             ]
@@ -463,7 +463,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = allShortestPaths((o)-[r:{}*1..]->(h)) WHERE o.owned = true AND h.highvalue = true RETURN p"
+                    "query": "MATCH p = allShortestPaths((o)-[r:{}*1..]->(h)) WHERE o <> h AND o.owned = true AND h.highvalue = true RETURN p"
                 }
             ]
         },

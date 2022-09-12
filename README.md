@@ -18,12 +18,12 @@ The queries are grouped by categories, as shown in the example below:
 ## Get Started
 On Linux, you can simply install the queries using this curl command:
 ```sh
-$ curl -o "~/.config/bloodhound/customqueries.json" "https://raw.githubusercontent.com/mchoji/BloodHound-Queries/main/customqueries.json"
+$ curl -o "~/.config/bloodhound/customqueries.json" "https://raw.githubusercontent.com/yok4i/BloodHound-Queries/main/customqueries.json"
 ```
 
 On Windows, you can simply install the queries using this PowerShell command:
 ```powershell
-PS C:\> Invoke-WebRequest -Uri "https://raw.githubusercontent.com/mchoji/BloodHound-Queries/main/customqueries.json" -OutFile "$env:USERPROFILE\AppData\Roaming\bloodhound\customqueries.json"
+PS C:\> Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yok4i/BloodHound-Queries/main/customqueries.json" -OutFile "$env:USERPROFILE\AppData\Roaming\bloodhound\customqueries.json"
 ```
 
 ## Extras
