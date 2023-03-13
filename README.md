@@ -30,3 +30,13 @@ PS C:\> Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yok4i/BloodHou
 Besides the previously cited repos, you may also find useful content about BloodHount at [awesome-bloodhound by chryzsh](https://github.com/chryzsh/awesome-bloodhound).
 There is also a great cheatsheet at https://neo4j.com/docs/cypher-refcard.
 For more information, see the [official documentation](https://neo4j.com/docs/cypher-manual/current).
+
+## Resources
+  - [Azure relationships list](https://raw.githubusercontent.com/BloodHoundAD/AzureHound/main/enums/relationship.go)
+
+### Helper scripts
+
+List all relationships used by AzureHound in Cypher Query format:
+```sh
+curl -s https://raw.githubusercontent.com/BloodHoundAD/AzureHound/main/enums/relationship.go | egrep -o "Relationship\s*=\s*\"[^\"]+\"" | cut -d\" -f2 | tr '\n' '|' | sed -E -e 's/^/:/' -e 's/\|$//'
+```

@@ -1,7 +1,7 @@
 {
     "queries": [
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "List all owned users",
             "queryList": [
                 {
@@ -11,37 +11,77 @@
             ]
         },
         {
-            "category": "Information",
-            "name": "List all owned computers/devices",
+            "category": "Information Azure",
+            "name": "List all owned users",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH r=(d)-[:Contains|AZContains*1..]->(m) WHERE (m:Computer OR m:AZDevice) AND m.owned=True RETURN r UNION MATCH (r) WHERE (r:Computer or r:AZDevice or r:AZVM) AND r.owned=True RETURN r"
+                    "query": "MATCH (u:AZUser {owned: True}) OPTIONAL MATCH (u)-[r:AZMemberOf|AZHasRole*1..]->(g) WHERE (g:AZRole OR g:AZGroup) AND g.highvalue RETURN u, g, r"
                 }
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
+            "name": "List all owned computers",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (m:Computer {owned: True}) OPTIONAL MATCH (g)-[r:Contains*1..]->(m) RETURN m, r, g"
+                }
+            ]
+        },
+        {
+            "category": "Information Azure",
+            "name": "List all owned devices",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (m:AZDevice {owned: True}) OPTIONAL MATCH (g)-[r:AZContains*1..]->(m) RETURN m, r, g"
+                }
+            ]
+        },
+        {
+            "category": "Information On-premises",
             "name": "List all owned groups",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH r=(d)-[:Contains|AZContains*1..]->(m) WHERE (m:Group OR m:AZGroup) AND m.owned=True RETURN r UNION MATCH (r) WHERE (r:Group or r:AZGroup) AND r.owned=True RETURN r"
+                    "query": "MATCH (m:Group {owned: True}) OPTIONAL MATCH (g)-[r:Contains*1..]->(m) RETURN m, r, g"
                 }
             ]
         },
         {
-            "category": "Information",
-            "name": "List the groups of all owned users",
+            "category": "Information Azure",
+            "name": "List all owned groups",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (m {owned: True}) WHERE (m:User OR m:AZUser) WITH m MATCH p=(m)-[:MemberOf*1..]->(n) WHERE (n:Group OR n:AZGroup) RETURN p"
+                    "query": "MATCH (m:AZGroup {owned: True}) OPTIONAL MATCH (g)-[r:AZContains*1..]->(m) RETURN m, r, g"
                 }
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
+            "name": "List groups of all owned users",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (m:User {owned: True}) OPTIONAL MATCH (m)-[r:MemberOf*1..]->(n) RETURN m, r, n"
+                }
+            ]
+        },
+        {
+            "category": "Information Azure",
+            "name": "List groups of all owned users",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (m:AZUser {owned: True}) OPTIONAL MATCH (m)-[r:AZMemberOf*1..]->(n) RETURN m, r, n"
+                }
+            ]
+        },
+        {
+            "category": "Information On-premises",
             "name": "All Users with with Same Name in Different Domains",
             "queryList": [
                 {
@@ -51,7 +91,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "Find an object in one domain that can do something to a foreign object",
             "queryList": [
                 {
@@ -61,7 +101,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "Find all sessions a user in a specific domain has",
             "requireNodeSelect": true,
             "queryList": [
@@ -79,7 +119,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "Find an object from domain 'A' that can do anything to a foreign object",
             "requireNodeSelect": true,
             "queryList": [
@@ -97,17 +137,27 @@
             ]
         },
         {
-            "category": "Information",
-            "name": "Find All edges any owned user has on a computer/device/vm/app",
+            "category": "Information On-premises",
+            "name": "Find All edges any owned user has on a computer",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p=shortestPath((m {owned: True})-[r*]->(b)) WHERE (m:User OR m:AZUser) AND (b:Computer OR b:AZDevice OR b:AZVM OR b:AZAPP) RETURN p"
+                    "query": "MATCH p=shortestPath((m:User {owned: True})-[r*]->(b:Computer)) WHERE NOT m=b RETURN p"
                 }
             ]
         },
         {
-            "category": "Information",
+            "category": "Information Azure",
+            "name": "Find All edges any owned user has on a device, vm, app, keyvault etc.",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=shortestPath((m:AZUser {owned: True})-[r*]->(b)) WHERE NOT m=b AND (b:AZDevice OR b:AZVM OR b:AZApp OR b:AZKeyVault OR b:AZFunctionApp OR b:AZTenant OR b:AZSubscription OR b:AZResourceGroup OR b:AZWorkflow) RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "Information On-premises",
             "name": "All ACLs to Computers (excluding High Value Targets)",
             "queryList": [
                 {
@@ -117,7 +167,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "All Computers in Domain Admins",
             "queryList": [
                 {
@@ -136,7 +186,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "All Owned Principals",
             "queryList": [
                 {
@@ -146,7 +196,17 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information Azure",
+            "name": "All Owned Principals",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (o) WHERE o.owned = true RETURN o"
+                }
+            ]
+        },
+        {
+            "category": "Information On-premises",
             "name": "Find all active Domain Admin sessions",
             "queryList": [
                 {
@@ -156,7 +216,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "Find users that logged in within the last 90 days",
             "queryList": [
                 {
@@ -166,7 +226,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "Find users with passwords last set within the last 90 days",
             "queryList": [
                 {
@@ -176,7 +236,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": " Return the name of every computer in the database where at least one SPN for the computer contains the string 'MSSQL'",
             "queryList": [
                 {
@@ -186,7 +246,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": " Return the name of every computer in the database where at least one SPN for the computer contains the string 'JENKINS'",
             "queryList": [
                 {
@@ -196,7 +256,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": " Return the name of every computer in the database where at least one SPN for the computer contains the string 'JIRA'",
             "queryList": [
                 {
@@ -206,7 +266,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "View all GPOs",
             "queryList": [
                 {
@@ -216,7 +276,7 @@
             ]
         },
         {
-            "category": "Information",
+            "category": "Information On-premises",
             "name": "Find groups that contain both users and computers",
             "queryList": [
                 {
@@ -247,57 +307,57 @@
         },
         {
             "category": "Interesting Information",
-            "name": "All Users with 'PASS' in AD Description",
+            "name": "All Principals with 'PASS' in AD Description",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (u:User) WHERE u.description =~ '(?i).*pass.*' RETURN u"
+                    "query": "MATCH (u) WHERE u.description =~ '(?i).*pass.*' RETURN u"
                 }
             ]
         },
         {
             "category": "Interesting Information",
-            "name": "All Users with 'LOGIN' in AD Description",
+            "name": "All Principals with 'LOGIN' in AD Description",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (u:User) WHERE u.description =~ '(?i).*login.*' RETURN u"
+                    "query": "MATCH (u) WHERE u.description =~ '(?i).*login.*' RETURN u"
                 }
             ]
         },
         {
             "category": "Interesting Information",
-            "name": "All Users with 'BACKUP' in AD Description",
+            "name": "All Principals with 'BACKUP' in AD Description",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (u:User) WHERE u.description =~ '(?i).*backup.*' RETURN u"
+                    "query": "MATCH (u) WHERE u.description =~ '(?i).*backup.*' RETURN u"
                 }
             ]
         },
         {
             "category": "Interesting Information",
-            "name": "All Users with '<password-like string>' in AD Description",
+            "name": "All Principals with '<password-like string>' in AD Description",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (u:User) WHERE u.description =~ '(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[^\\\\w\\\\s]).{6,}' RETURN u"
+                    "query": "MATCH (u) WHERE u.description =~ '(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[^\\\\w\\\\s]).{6,}' RETURN u"
                 }
             ]
         },
         {
             "category": "Interesting Information",
-            "name": "All Users with 'SENHA' in AD Description",
+            "name": "All Principals with 'SENHA' in AD Description",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (u:User) WHERE u.description =~ '(?i).*senha.*' RETURN u"
+                    "query": "MATCH (u) WHERE u.description =~ '(?i).*senha.*' RETURN u"
                 }
             ]
         },
         {
             "category": "Interesting Information",
-            "name": "All Users with Password not Required",
+            "name": "All Users with Password not Required (on-premises)",
             "queryList": [
                 {
                     "final": true,
@@ -341,7 +401,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p=(m)-[:MemberOf*]->(g) WHERE g.name =~ '(?i).*jenkins.*' OR g.azname =~ '(?i).*jenkins.*' OR m.name =~ '(?i).*jenkins.*' OR m.azname =~ '(?i).*jenkins.*' RETURN p"
+                    "query": "MATCH (m) WHERE  (m:User OR m:Groupo OR m:AZUser OR m:AZGroup) AND  (m.name =~ '(?i).*jenkins.*' OR m.azname =~ '(?i).*jenkins.*') RETURN m"
                 }
             ]
         },
@@ -371,7 +431,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p=shortestPath((g {owned:true})-[*1..]->(n {highvalue:true})) WHERE  g<>n return p"
+                    "query": "MATCH p=allShortestPaths((g {owned:true})-[*1..]->(n {highvalue:true})) WHERE  g<>n return p"
                 }
             ]
         },
@@ -397,6 +457,22 @@
                 {
                     "final": true,
                     "query": "MATCH p = allShortestPaths((uc)-[r:{}*1..]->(d:Domain {name: $result})) WHERE (uc:User OR uc:Computer) RETURN p",
+                    "endNode": "{}"
+                }
+            ]
+        },
+        {
+            "category": "Shortest Paths",
+            "name": "All Shortest Paths to Azure Tenant",
+            "queryList": [
+                {
+                    "final": false,
+                    "title": "Select a Tenant...",
+                    "query": "MATCH (d:AZTenant) RETURN d.name ORDER BY d.name ASC"
+                },
+                {
+                    "final": true,
+                    "query": "MATCH p = allShortestPaths((uc)-[r:{}*1..]->(d:AZTenant {name: $result})) WHERE NOT uc=d RETURN p",
                     "endNode": "{}"
                 }
             ]
@@ -437,7 +513,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = allShortestPaths((u:User)-[r:{}*1..]->(a)) WHERE u.owned = true AND u <> a RETURN p"
+                    "query": "MATCH p = allShortestPaths((u {owned: True})-[r:{}*1..]->(a)) WHERE NOT u=a AND (a:Domain OR a:AZTenant OR a.highvalue)RETURN p"
                 }
             ]
         },
@@ -842,13 +918,53 @@
                 }
             ]
         },
+         {
+            "category": "Azure",
+            "name": "Set Members of High Value Targets Azure Groups as High Value Targets",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (a)-[r:AZMemberOf*1..]->(g:AZGroup) WHERE g.highvalue = true  AND (a.highvalue IS NULL OR a.highvalue=False)  SET a.highvalue=true, a.highvaluereason='Member of High Value Target Group' RETURN a"
+                }
+            ]
+        },
         {
-            "category": "High Value",
+            "category": "Azure",
+            "name": "Set principals with permissions in High Value Roles as High Value Targets",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (a)-[r:AZHasRole*1..]->(g:AZRole) WHERE g.highvalue = true  AND (a.highvalue IS NULL OR a.highvalue=False)  SET a.highvalue=true, a.highvaluereason='Principal with High Value role assigned' RETURN a"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
             "name": "Set members with Azure's Gobal Administrator role as High Value Targets",
             "queryList": [
                 {
                     "final": true,
                     "query": "MATCH (a)-[r:AZGlobalAdmin*1..]->(m) SET a.highvalue=true, a.highvaluereason='Has Azure\\' Global Administrator role' RETURN a"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "Set owners of Azure Applications as High Value Targets",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (a)-[r:AZOwns*1..]->(n:AZApp) SET a.highvalue=true, a.highvaluereason='Owner of an Azure Application' RETURN a"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "Set owners of Azure VMs as High Value Targets",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (a)-[r:AZOwns*1..]->(n:AZVM) SET a.highvalue=true, a.highvaluereason='Owner of an Azure VM' RETURN a"
                 }
             ]
         },
@@ -864,71 +980,101 @@
         },
         {
             "category": "Azure",
-            "name": "List Azure Users (Limit: 100)",
+            "name": "List Azure Tenants (Limit: 50)",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (m:AZUser) RETURN m LIMIT 100"
+                    "query": "MATCH (m:AZTenant) RETURN m LIMIT 50"
                 }
             ]
         },
         {
             "category": "Azure",
-            "name": "List Azure Groups (Limit: 100)",
+            "name": "List All High Value Targets",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (m:AZGroup) RETURN m LIMIT 100"
+                    "query": "MATCH (m {highvalue: True}) OPTIONAL MATCH (m)-[r:AZMemberOf|AZHasRole|AZOwns]-(n {highvalue: true}) RETURN m, n, r"
                 }
             ]
         },
         {
             "category": "Azure",
-            "name": "List Azure Devices (Limit: 100)",
+            "name": "List Azure Users (Limit: 50)",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (m:AZDevice) RETURN m LIMIT 100"
+                    "query": "MATCH (m:AZUser) RETURN m LIMIT 50"
                 }
             ]
         },
         {
             "category": "Azure",
-            "name": "List Azure VMs (Limit: 100)",
+            "name": "List Azure Groups (Limit: 50)",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (m:AZVM) RETURN m LIMIT 100"
+                    "query": "MATCH (m:AZGroup) RETURN m LIMIT 50"
                 }
             ]
         },
         {
             "category": "Azure",
-            "name": "List Azure Key Vaults (Limit: 100)",
+            "name": "List Azure Apps (Limit: 50)",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (m:AZKeyVault) RETURN m LIMIT 100"
+                    "query": "MATCH (n:AZApp) RETURN n LIMIT 50"
                 }
             ]
         },
         {
             "category": "Azure",
-            "name": "List Azure Resource Groups (Limit: 100)",
+            "name": "List Azure Devices (Limit: 50)",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (m:AZResourceGroup) RETURN m LIMIT 100"
+                    "query": "MATCH (m:AZDevice) RETURN m LIMIT 50"
                 }
             ]
         },
         {
             "category": "Azure",
-            "name": "List Azure Service Principals (Limit: 100)",
+            "name": "List Azure VMs (Limit: 50)",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (m:AZServicePrincipal) RETURN m LIMIT 100"
+                    "query": "MATCH (m:AZVM) RETURN m LIMIT 50"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "List Azure Key Vaults (Limit: 50)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (m:AZKeyVault) RETURN m LIMIT 50"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "List Azure Resource Groups (Limit: 50)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (m:AZResourceGroup) RETURN m LIMIT 50"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "List Azure Service Principals (Limit: 50)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (m:AZServicePrincipal) RETURN m LIMIT 50"
                 }
             ]
         },
@@ -944,7 +1090,47 @@
         },
         {
             "category": "Azure",
-            "name": "Return Azure Devices with the most edges",
+            "name": "List Azure roles that can reset password",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=(n)-[]-(m) WHERE (tolower(n.templateid)) IN ['c4e39bd9-1100-46d3-8c65-fb160da0071f', '7be44c8a-adaf-4e2a-84d6-ab2649e08a13', '729827e3-9c14-49f7-bb1b-9608f156bbb8', 'fe930be7-5e62-47db-91af-98c3a49a38b1', '966707d0-3269-4727-9be2-8c3a10f19b9d'] RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "Set Azure roles that can reset password as High Value Targets",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=(n)-[]-(m) WHERE (tolower(n.templateid)) IN ['c4e39bd9-1100-46d3-8c65-fb160da0071f', '7be44c8a-adaf-4e2a-84d6-ab2649e08a13', '729827e3-9c14-49f7-bb1b-9608f156bbb8', 'fe930be7-5e62-47db-91af-98c3a49a38b1', '966707d0-3269-4727-9be2-8c3a10f19b9d'] AND  (n.highvalue IS NULL OR NOT n.highvalue) SET n.highvalue=True, n.highvaluereason='Can reset password on Azure' RETURN n"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "Set owners of Azure Applications as High Value Targets",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p = (n)-[r:AZOwns]->(g:AZApp) WHERE n.highvalue IS NULL OR n.highvalue=False SET n.highvalue=True, n.highvaluereason='Owner of Azure Application' RETURN p"
+                }
+            ]
+        },
+         {
+            "category": "Azure",
+            "name": "Set Privileged Service Principals as High Value Targets",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p = (g:AZServicePrincipal)-[r]->(n) WHERE g.highvalue IS NULL OR g.highvalue=False SET g.highvalue=True, g.highvaluereason='Privileged Service Principal' RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "Return Azure Devices with the most edges (Limit: 25)",
             "queryList": [
                 {
                     "final": true,
@@ -954,7 +1140,7 @@
         },
         {
             "category": "Azure",
-            "name": "Return Azure Users with the most edges",
+            "name": "Return Azure Users with the most edges (Limit: 25)",
             "queryList": [
                 {
                     "final": true,
@@ -968,7 +1154,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (m)-[r]-() WHERE r.isazure AND m.owned RETURN m"
+                    "query": "MATCH (m {owned: True})-[r {isazure: True}]-() OPTIONAL MATCH (m)-[s:AZMemberOf*1..]->(g:AZGroup {highvalue: True}) RETURN m, g, s"
                 }
             ]
         },
@@ -984,11 +1170,11 @@
         },
         {
             "category": "Azure",
-            "name": "Find all paths to an Azure VM",
+            "name": "Find all shortest paths to an Azure VM",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p = (n)-[r]->(g:AZVM) RETURN p"
+                    "query": "MATCH p = allShortestPaths((n)-[r*1..]->(g:AZVM)) WHERE NOT n=g RETURN p"
                 }
             ]
         },
@@ -1004,11 +1190,31 @@
         },
         {
             "category": "Azure",
-            "name": "Return All Azure Users and their Groups",
+            "name": "Find all shortest paths to an Azure KeyVault",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p=(m:AZUser)-[r:MemberOf]->(n) WHERE NOT m.objectid CONTAINS 'S-1-5' RETURN p"
+                    "query": "MATCH p = allShortestPaths((n)-[r]->(g:AZKeyVault)) WHERE NOT n=g RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "Return All Azure Users and their Groups (Limit: 50)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=(m:AZUser)-[r:AZMemberOf|MemberOf]->(n) WHERE NOT m.objectid CONTAINS 'S-1-5' RETURN p LIMIT 50"
+                }
+            ]
+        },
+        {
+            "category": "Azure",
+            "name": "Return All Owned Azure Users and their Groups (Limit: 50)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=(m:AZUser {owned: True})-[r:AZMemberOf|MemberOf]->(n) WHERE NOT m.objectid CONTAINS 'S-1-5' RETURN p LIMIT 50"
                 }
             ]
         },
@@ -1018,7 +1224,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (n:Group) WHERE n.objectid CONTAINS 'S-1-5' AND n.azsyncid IS NOT NULL RETURN n"
+                    "query": "MATCH (n:AZGroup) WHERE n.objectid CONTAINS 'S-1-5' AND n.azsyncid IS NOT NULL RETURN n"
                 }
             ]
         },
@@ -1099,6 +1305,16 @@
                 {
                     "final": true,
                     "query": "MATCH p=(m)-[MemberOf]->(n) WHERE (m:User OR m:AZUser) AND (n:Group OR n:AZGroup) AND (n.name =~ '(?i).*vpn.*' OR n.azname =~ '(?i).*vpn.*') RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "Post-processing",
+            "name": "Ensure Azure relationships are flagged with 'isazure' property",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=()-[r:AZAvereContributor|AZContains|AZContributor|AZGetCertificates|AZGetKeys|AZGetSecrets|AZHasRole|AZMemberOf|AZOwner|AZRunsAs|AZVMContributor|AZAddMembers|AZAddSecret|AZExecuteCommand|AZGlobalAdmin|AZGrant|AZGrantSelf|AZPrivilegedRoleAdmin|AZAZResetPassword|AZUserAccessAdministrator]->() SET r.isazure = true RETURN p LIMIT 25"
                 }
             ]
         }
