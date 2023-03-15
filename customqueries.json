@@ -595,11 +595,11 @@
         },
         {
             "category": "Dangerous Rights",
-            "name": "Find groups that can reset passwords (Warning: Heavy)",
+            "name": "Find groups that can reset passwords",
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH p=(m:Group)-[r:ForceChangePassword]->(n:User) RETURN p"
+                    "query": "MATCH p=(m:Group)-[r:ForceChangePassword]->(n:User) RETURN m"
                 }
             ]
         },
