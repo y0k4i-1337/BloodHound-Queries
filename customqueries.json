@@ -720,7 +720,7 @@
             "queryList": [
                 {
                     "final": true,
-                    "query": "MATCH (u:User {hasspn:true}) MATCH (g:Group) WHERE g.objectid ENDS WITH '-512' MATCH p = shortestPath( (u)-[*1..]->(g) ) RETURN p"
+                    "query": "MATCH (u:User {hasspn:true}) MATCH (g:Group) WHERE g.objectid ENDS WITH '-512' MATCH p = allShortestPaths( (u)-[*1..]->(g) ) RETURN p"
                 }
             ]
         },
@@ -918,7 +918,7 @@
                 }
             ]
         },
-         {
+        {
             "category": "Azure",
             "name": "Set Members of High Value Targets Azure Groups as High Value Targets",
             "queryList": [
@@ -1118,7 +1118,7 @@
                 }
             ]
         },
-         {
+        {
             "category": "Azure",
             "name": "Set Privileged Service Principals as High Value Targets",
             "queryList": [
