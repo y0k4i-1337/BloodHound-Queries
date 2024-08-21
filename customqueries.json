@@ -92,16 +92,6 @@
         },
         {
             "category": "Information On-premises",
-            "name": "Find an object in one domain that can do something to a foreign object",
-            "queryList": [
-                {
-                    "final": true,
-                    "query": "MATCH p=(n)-[r]->(m) WHERE NOT n.domain = m.domain RETURN p"
-                }
-            ]
-        },
-        {
-            "category": "Information On-premises",
             "name": "Find all sessions a user in a specific domain has",
             "requireNodeSelect": true,
             "queryList": [
@@ -287,16 +277,6 @@
         },
         {
             "category": "Interesting Information",
-            "name": "All Computers without LAPS",
-            "queryList": [
-                {
-                    "final": true,
-                    "query": "MATCH (c:Computer) WHERE c.haslaps = false RETURN c"
-                }
-            ]
-        },
-        {
-            "category": "Interesting Information",
             "name": "All Users with Password in AD",
             "queryList": [
                 {
@@ -312,6 +292,38 @@
                 {
                     "final": true,
                     "query": "MATCH (u) WHERE u.description =~ '(?i).*pass.*' RETURN u"
+                }
+            ]
+        },
+        {
+            "category": "Cross-Domain Information",
+            "name": "Find principals that can do something to a foreign object (exclude domain admins)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (da)-[r:MemberOf*1..]->(g:Group) WHERE g.objectid =~ $domain_admins_id OR g.objectid =~ $enterprise_admins_id OR g.objectid =~ $domain_controllers_id OR g.objectid =~ $administrators_id  WITH COLLECT(da) AS exclude MATCH p=allShortestPaths((n)-[:MemberOf|HasSession|AdminTo|AllExtendedRights|AddMember|ForceChangePassword|GenericAll|GenericWrite|Owns|WriteDacl|WriteOwner|CanRDP|ExecuteDCOM|AllowedToDelegate|ReadLAPSPassword|Contains|GPLink|AddAllowedToAct|AllowedToAct|WriteAccountRestrictions|SQLAdmin|ReadGMSAPassword|HasSIDHistory|CanPSRemote|SyncLAPSPassword|DumpSMSAPassword|AZMGGrantRole|AZMGAddSecret|AZMGAddOwner|AZMGAddMember|AZMGGrantAppRoles|AZNodeResourceGroup|AZWebsiteContributor|AZLogicAppContributo|AZAutomationContributor|AZAKSContributor|AZAddMembers|AZAddOwner|AZAddSecret|AZAvereContributor|AZContains|AZContributor|AZExecuteCommand|AZGetCertificates|AZGetKeys|AZGetSecrets|AZGlobalAdmin|AZHasRole|AZManagedIdentity|AZMemberOf|AZOwns|AZPrivilegedAuthAdmin|AZPrivilegedRoleAdmin|AZResetPassword|AZUserAccessAdministrator|AZAppAdmin|AZCloudAppAdmin|AZRunsAs|AZKeyVaultContributor|AZVMAdminLogin|AZVMContributor|AZLogicAppContributor|AddSelf|WriteSPN|AddKeyCredentialLink|DCSync*1..]->(m)) WHERE (n:User OR n:Computer) AND (m:User OR m:Computer OR m:GPO) AND NOT n IN exclude AND NOT n.domain = m.domain RETURN p",
+                    "props": {
+                        "domain_admins_id": "S-1-5-.*-512",
+                        "enterprise_admins_id": "S-1-5-.*-519",
+                        "domain_controllers_id": "S-1-5-.*-516",
+                        "administrators_id": ".*-S-1-5-32-544"
+                    }
+                }
+            ]
+        },
+        {
+            "category": "Cross-Domain Information",
+            "name": "Find OWNED principals that can do something to a foreign object (exclude domain admins)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (da)-[r:MemberOf*1..]->(g:Group) WHERE g.objectid =~ $domain_admins_id OR g.objectid =~ $enterprise_admins_id OR g.objectid =~ $domain_controllers_id OR g.objectid =~ $administrators_id  WITH COLLECT(da) AS exclude MATCH p=allShortestPaths((n {owned: True})-[:MemberOf|HasSession|AdminTo|AllExtendedRights|AddMember|ForceChangePassword|GenericAll|GenericWrite|Owns|WriteDacl|WriteOwner|CanRDP|ExecuteDCOM|AllowedToDelegate|ReadLAPSPassword|Contains|GPLink|AddAllowedToAct|AllowedToAct|WriteAccountRestrictions|SQLAdmin|ReadGMSAPassword|HasSIDHistory|CanPSRemote|SyncLAPSPassword|DumpSMSAPassword|AZMGGrantRole|AZMGAddSecret|AZMGAddOwner|AZMGAddMember|AZMGGrantAppRoles|AZNodeResourceGroup|AZWebsiteContributor|AZLogicAppContributo|AZAutomationContributor|AZAKSContributor|AZAddMembers|AZAddOwner|AZAddSecret|AZAvereContributor|AZContains|AZContributor|AZExecuteCommand|AZGetCertificates|AZGetKeys|AZGetSecrets|AZGlobalAdmin|AZHasRole|AZManagedIdentity|AZMemberOf|AZOwns|AZPrivilegedAuthAdmin|AZPrivilegedRoleAdmin|AZResetPassword|AZUserAccessAdministrator|AZAppAdmin|AZCloudAppAdmin|AZRunsAs|AZKeyVaultContributor|AZVMAdminLogin|AZVMContributor|AZLogicAppContributor|AddSelf|WriteSPN|AddKeyCredentialLink|DCSync*1..]->(m)) WHERE (n:User OR n:Computer) AND (m:User OR m:Computer OR m:GPO) AND NOT n IN exclude AND NOT n.domain = m.domain RETURN p",
+                    "props": {
+                        "domain_admins_id": "S-1-5-.*-512",
+                        "enterprise_admins_id": "S-1-5-.*-519",
+                        "domain_controllers_id": "S-1-5-.*-516",
+                        "administrators_id": ".*-S-1-5-32-544"
+                    }
                 }
             ]
         },
@@ -342,16 +354,6 @@
                 {
                     "final": true,
                     "query": "MATCH (u) WHERE u.description =~ '(?=.*?[A-Za-z])(?=.*?[0-9])(?=.*?[^\\\\w\\\\s]).{6,}' RETURN u"
-                }
-            ]
-        },
-        {
-            "category": "Interesting Information",
-            "name": "All Principals with 'SENHA' in AD Description",
-            "queryList": [
-                {
-                    "final": true,
-                    "query": "MATCH (u) WHERE u.description =~ '(?i).*senha.*' RETURN u"
                 }
             ]
         },
@@ -694,6 +696,56 @@
             ]
         },
         {
+            "category": "LAPS",
+            "name": "All Computers without LAPS",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (c:Computer) WHERE c.haslaps = false RETURN c"
+                }
+            ]
+        },
+        {
+            "category": "LAPS",
+            "name": "All Computers with LAPS",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (c:Computer) WHERE c.haslaps = true RETURN c"
+                }
+            ]
+        },
+        {
+            "category": "LAPS",
+            "name": "All Users that can read LAPS passwords (excluding Domain Admins)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (adm)-[MemberOf*1..]->(g:Group) WHERE g.objectid =~ $domain_admins_id OR g.objectid =~ $enterprise_admins_id OR g.objectid =~ $domain_controllers_id WITH COLLECT(adm) AS exclude MATCH p = (u:User)-[r:ReadLAPSPassword|MemberOf*1..]->(c:Computer) WHERE NOT u IN exclude RETURN p",
+                    "props": {
+                        "domain_admins_id": "S-1-5-.*-512",
+                        "enterprise_admins_id": "S-1-5-.*-519",
+                        "domain_controllers_id": "S-1-5-.*-516"
+                    }
+                }
+            ]
+        },
+        {
+            "category": "LAPS",
+            "name": "All Principals that can sync LAPS passwords (excluding Domain Admins)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (adm)-[MemberOf*1..]->(g:Group) WHERE g.objectid =~ $domain_admins_id OR g.objectid =~ $enterprise_admins_id OR g.objectid =~ $domain_controllers_id WITH COLLECT(adm) AS exclude MATCH p = (u)-[r:SyncLAPSPassword|MemberOf*1..]->(c) WHERE NOT u IN exclude RETURN p",
+                    "props": {
+                        "domain_admins_id": "S-1-5-.*-512",
+                        "enterprise_admins_id": "S-1-5-.*-519",
+                        "domain_controllers_id": "S-1-5-.*-516"
+                    }
+                }
+            ]
+        },
+        {
             "category": "Kerberos",
             "name": "Find all Kerberoastable Users",
             "queryList": [
@@ -829,6 +881,30 @@
             ]
         },
         {
+            "category": "RBCD (Resource Based Constrained Delegation)",
+            "name": "All RBCD",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p = (a)-[:AllowedToAct]->(c:Computer) RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "RBCD (Resource Based Constrained Delegation)",
+            "name": "Find exploitable paths to RBCD (exclude domain admins)",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (admins)-[r:MemberOf*0..]->(g:Group) WHERE g.objectid =~ $domain_admins_id OR g.objectid =~ $enterprise_admins_id WITH COLLECT(admins) as exclude MATCH p = (u:User)-[r:MemberOf*0..]->(g:Group)-[r1:GenericAll|GenericWrite|Owns|WriteDacl|WriteOwner|AddAllowedToAct|WriteAccountRestrictions]->(c:Computer) WHERE NOT u IN exclude RETURN p",
+                    "props": {
+                        "domain_admins_id": "S-1-5-.*-512",
+                        "enterprise_admins_id": "s-1-5-.*-519"
+                    }
+                }
+            ]
+        },
+        {
             "category": "High Value",
             "name": "List all High Valued Targets",
             "queryList": [
@@ -905,6 +981,26 @@
                 {
                     "final": true,
                     "query": "MATCH (a)-[r:AllowedToDelegate|ExecuteDCOM|ForceChangePassword|GenericAll|GenericWrite|Owns|WriteDacl|WriteOwner]->(n:Computer) SET a.highvalue = true, a.highvaluereason = 'Principal with Privileges on Computers' RETURN a"
+                }
+            ]
+        },
+        {
+            "category": "High Value",
+            "name": "Set Principals with Privileges on GPOs as High Value Targets",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (a)-[r:AllExtendedRights|GenericAll|GenericWrite|Owns|WriteDacl|WriteOwner|GpLink*1..]->(g:GPO) SET a.highvalue = true, a.highvaluereason = 'Principal with Privileges on GPOs' RETURN a"
+                }
+            ]
+        },
+        {
+            "category": "High Value",
+            "name": "Set RBCD Principals as High Value Targets",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (a)-[r:AllowedToAct]->(c:Computer) SET a.highvalue = true, a.highvaluereason = 'RBCD Principal' RETURN a"
                 }
             ]
         },
