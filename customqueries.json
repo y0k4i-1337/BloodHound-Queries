@@ -656,6 +656,92 @@
             ]
         },
         {
+            "category": "RDP",
+            "name": "Find all users that can RDP into a given computer",
+            "requireNodeSelect": true,
+            "queryList": [
+                {
+                    "final": false,
+                    "title": "Select computer...",
+                    "query": "MATCH (c:Computer) RETURN c.name ORDER BY c.name"
+                },
+                {
+                    "final": true,
+                    "query": "MATCH p=(m:User)-[r:CanRDP|MemberOf*1..]->(n:Computer {name:$result}) RETURN p",
+                    "startNode": "{}",
+                    "allowCollapse": false
+                }
+            ]
+        },
+        {
+            "category": "RDP",
+            "name": "Find all computers we can RDP into from owned constrained delegation",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (m {owned: True})-[:AllowedToDelegate]->(c:Computer) WITH COLLECT(c) AS targets MATCH p=(u:User)-[r:CanRDP|MemberOf*1..]->(n:Computer) WHERE n IN targets RETURN p UNION ALL MATCH p  = (m {owned: True})-[:AllowedToDelegate]->(c:Computer) RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "PSRemote",
+            "name": "Find machines Domain Users can PSRemote into",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p = shortestPath((u:User)-[r:CanPSRemote|MemberOf*1..]->(g:Computer)) WHERE NOT u = g RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "PSRemote",
+            "name": "Find what GROUPS can PSRemote",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=(m:Group)-[r:CanPSRemote]->(n:Computer) RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "PSRemote",
+            "name": "Find machines OWNED Principals can PSRemote into",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=(m {owned: True})-[r:CanPSRemote]->(n:Computer) RETURN p"
+                }
+            ]
+        },
+        {
+            "category": "PSRemote",
+            "name": "Find all users that can PSRemote into a given computer",
+            "requireNodeSelect": true,
+            "queryList": [
+                {
+                    "final": false,
+                    "title": "Select computer...",
+                    "query": "MATCH (c:Computer) RETURN c.name ORDER BY c.name"
+                },
+                {
+                    "final": true,
+                    "query": "MATCH p=(m:User)-[r:CanPSRemote|MemberOf*1..]->(n:Computer {name:$result}) RETURN p",
+                    "startNode": "{}",
+                    "allowCollapse": false
+                }
+            ]
+        },
+        {
+            "category": "PSRemote",
+            "name": "Find all computers we can PSRemote into from owned constrained delegation",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH (m {owned: True})-[:AllowedToDelegate]->(c:Computer) WITH COLLECT(c) AS targets MATCH p=(u:User)-[r:CanPSRemote|MemberOf*1..]->(n:Computer) WHERE n IN targets RETURN p UNION ALL MATCH p  = (m {owned: True})-[:AllowedToDelegate]->(c:Computer) RETURN p"
+                }
+            ]
+        },
+        {
             "category": "Local Admin",
             "name": "Find groups that have local admin rights (Warning: Heavy)",
             "queryList": [
